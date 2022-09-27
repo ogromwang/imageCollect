@@ -4,6 +4,8 @@
 )]
 
 mod dao;
+mod menu;
+
 use crate::dao::imageview_dao::{ImageViewDao, ImagesMetaList, ImagesMeta, BrowseSettings};
 use serde_with::serde_as;
 
@@ -20,6 +22,9 @@ fn main() {
       delete_images_meta,
       update_images_meta,
     ])
+    .menu(menu::menu())
+    .system_tray(menu::system_menu())
+    .on_system_tray_event(menu::system_menu_handler)
     .run(tauri::generate_context!())
     .expect("error while running tauri application");
 }

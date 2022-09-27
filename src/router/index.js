@@ -1,6 +1,7 @@
 import { createWebHistory, createRouter } from "vue-router";
 import MyLib from "@/views/MyLibrary";
 import Browse from "@/views/Browse";
+import Drag from "@/views/Drag";
 
 const routes = [
   {
@@ -12,6 +13,11 @@ const routes = [
     path: "/browse",
     name: "browse",
     component: Browse,
+  },
+  {
+    path: "/drag",
+    name: "drag",
+    component: Drag,
   },
 ];
 

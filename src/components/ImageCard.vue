@@ -78,10 +78,17 @@ export default {
     const router = useRouter()
 
     async function browseImages () {
+      // router.push({
+      //   path: '/browse',
+      //   query: {
+      //     id: props.imagesMeta.id
+      //   }
+      // })
+
       router.push({
-        path: '/browse',
+        path: '/drag',
         query: {
-          id: props.imagesMeta.id
+
         }
       })
     }

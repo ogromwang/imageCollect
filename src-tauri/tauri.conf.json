@@ -60,12 +60,17 @@
     },
     "windows": [
       {
+        "fileDropEnabled": false,
         "fullscreen": false,
         "height": 600,
         "resizable": true,
         "title": "ImageView | 图阅",
         "width": 800
       }
-    ]
+    ],
+    "systemTray": {
+      "iconPath": "icons/128x128.png",
+      "iconAsTemplate": true
+    }
   }
 }

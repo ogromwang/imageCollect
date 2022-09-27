@@ -17,7 +17,7 @@ tauri-build = { version = "1.0.0-rc.9", features = [] }
 [dependencies]
 serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }
-tauri = { version = "1.0.0-rc.11", features = ["api-all", "devtools"] }
+tauri = { version = "1.0.0-rc.11", features = ["api-all", "devtools", "system-tray"] }
 sqlite = "0.26.0"
 chrono = "0.4"
 dire = "0.3.1"
