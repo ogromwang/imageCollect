@@ -13,14 +13,14 @@
   "tauri": {
     "allowlist": {
       "all": true,
-      "protocol": {˝
+      "protocol": {
         "asset": true,
         "all": true,
         "assetScope": ["*"]
       }
     },
     "bundle": {
-      "active": true,˝
+      "active": true,
       "category": "DeveloperTool",
       "copyright": "",
       "deb": {
