@@ -3,8 +3,8 @@
   "build": {
     "beforeBuildCommand": "",
     "beforeDevCommand": "",
-    "devPath": "Set automatically by Vue CLI plugin",
-    "distDir": "Set automatically by Vue CLI plugin"
+    "devPath": "../public",
+    "distDir": "../public"
   },
   "package": {
     "productName": "ImageView",
@@ -13,14 +13,14 @@
   "tauri": {
     "allowlist": {
       "all": true,
-      "protocol": {
+      "protocol": {˝
         "asset": true,
         "all": true,
         "assetScope": ["*"]
       }
     },
     "bundle": {
-      "active": true,
+      "active": true,˝
       "category": "DeveloperTool",
       "copyright": "",
       "deb": {
@@ -64,7 +64,7 @@
         "fullscreen": false,
         "height": 600,
         "resizable": true,
-        "title": "ImageView | 图阅",
+        "title": "ImageView",
         "width": 800
       }
     ],

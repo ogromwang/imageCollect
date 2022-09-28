@@ -22,8 +22,11 @@ fn main() {
       delete_images_meta,
       update_images_meta,
     ])
+    // 菜单
     .menu(menu::menu())
+    // 系统托盘
     .system_tray(menu::system_menu())
+    // 系统托盘事件，必须有
     .on_system_tray_event(menu::system_menu_handler)
     .run(tauri::generate_context!())
     .expect("error while running tauri application");
@@ -70,6 +73,7 @@ fn get_images_meta_list(
   page: i64,
   page_size: i64,
 ) -> Result<ImagesMetaList, String> {
+  println!("获取 image meta");
   let dao = get_dao();
   dao.get_images_meta_list(search, page, page_size)
 }

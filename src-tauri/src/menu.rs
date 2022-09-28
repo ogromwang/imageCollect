@@ -41,7 +41,7 @@ pub fn system_menu() -> SystemTray {
     SystemTray::new().with_menu(tray_menu)
 }
 
-// 菜单事件
+// 系统菜单事件
 pub fn system_menu_handler(app: &AppHandle, event: SystemTrayEvent) {
     // 获取应用窗口
     let window = app.get_window("main").unwrap();
@@ -91,6 +91,8 @@ pub fn system_menu_handler(app: &AppHandle, event: SystemTrayEvent) {
             }
             _ => {}
         },
-        _ => {}
+        _ => {
+            println!("other event")
+        }
     }
 }
