@@ -10,26 +10,40 @@ use crate::dao::imageview_dao::{ImageViewDao, ImagesMetaList, ImagesMeta, Browse
 use serde_with::serde_as;
 
 fn main() {
-  tauri::Builder::default()
-    .invoke_handler(tauri::generate_handler![
-      init_table,
-      add_images_meta,
-      get_images_meta_list,
-      get_images_folder_info,
-      get_images_meta,
-      update_browse_settings,
-      get_browse_settings,
-      delete_images_meta,
-      update_images_meta,
-    ])
-    // 菜单
-    .menu(menu::menu())
-    // 系统托盘
-    .system_tray(menu::system_menu())
-    // 系统托盘事件，必须有
-    .on_system_tray_event(menu::system_menu_handler)
-    .run(tauri::generate_context!())
-    .expect("error while running tauri application");
+  let mut _app = tauri::Builder::default()
+      .invoke_handler(tauri::generate_handler![
+        init_table,
+        add_images_meta,
+        get_images_meta_list,
+        get_images_folder_info,
+        get_images_meta,
+        update_browse_settings,
+        get_browse_settings,
+        delete_images_meta,
+        update_images_meta,
+      ])
+      .setup(|_app| {
+  
+        Ok(())
+      })
+      // 菜单
+      .menu(menu::menu())
+      // 系统托盘
+      .system_tray(menu::system_menu())
+      // 系统托盘事件，必须有
+      .on_system_tray_event(menu::system_menu_handler)
+      .build(tauri::generate_context!())
+      .expect("error while running tauri application")
+      .run(|_app_handle, event| {
+        match event {
+            tauri::RunEvent::ExitRequested {api, ..} => {
+              api.prevent_exit();
+            },
+            _ => {}
+        }
+
+      });
+
 }
 
 fn get_dao() -> ImageViewDao {
