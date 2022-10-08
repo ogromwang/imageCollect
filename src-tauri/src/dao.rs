@@ -67,7 +67,11 @@ pub mod imageview_dao {
             BrowseSettings {
                 meta_id: row[0].as_integer().unwrap(),
                 browse_type: String::from(row[1].as_string().unwrap()),
-                home_page: if (row[2].as_integer().unwrap()) > 0 { true } else { false },
+                home_page: if (row[2].as_integer().unwrap()) > 0 {
+                    true
+                } else {
+                    false
+                },
                 current_path: String::from(row[3].as_string().unwrap()),
                 current_index: row[4].as_integer().unwrap(),
             }
@@ -149,26 +153,34 @@ VALUES (:path, :title, :author, :intro, :cover, :create_time, :update_time);
         ) -> Result<ImagesMetaList, String> {
             let mut resp: ImagesMetaList = ImagesMetaList {
                 list: vec![],
-                pagination: Pagination { current: page as i32, page_size: page_size as i32, total: 0 },
+                pagination: Pagination {
+                    current: page as i32,
+                    page_size: page_size as i32,
+                    total: 0,
+                },
             };
             let search = search.trim();
 
             if search.len() == 0 {
-                let mut cursor = self.conn.prepare(
-                    "
+                let mut cursor = self
+                    .conn
+                    .prepare(
+                        "
                     SELECT COUNT(1) FROM imagesmeta;
-                    "
-                ).unwrap().into_cursor();
+                    ",
+                    )
+                    .unwrap()
+                    .into_cursor();
                 if let Some(row) = cursor.next().unwrap() {
                     resp.pagination.total = row[0].as_integer().unwrap() as i32;
                 }
-    
+
                 let statement_result = self.conn.prepare(
                     "
         SELECT * FROM imagesmeta ORDER BY update_time desc LIMIT ? OFFSET ?;
         ",
                 );
-    
+
                 match statement_result {
                     Ok(statement) => {
                         let mut cursor = statement.into_cursor();
@@ -178,7 +190,7 @@ VALUES (:path, :title, :author, :intro, :cover, :create_time, :update_time);
                                 sqlite::Value::Integer(((page - 1) * page_size) as i64),
                             ])
                             .unwrap();
-    
+
                         while let Some(row) = cursor.next().unwrap() {
                             resp.list.push(ImagesMeta::from(row));
                         }
@@ -187,22 +199,28 @@ VALUES (:path, :title, :author, :intro, :cover, :create_time, :update_time);
                     Err(_error) => Ok(resp),
                 }
             } else {
-                let mut cursor = self.conn.prepare(
-                    "
+                let mut cursor = self
+                    .conn
+                    .prepare(
+                        "
                     SELECT COUNT(1) FROM imagesmeta WHERE PRINTF('%s:#%s', title, author) LIKE ?;
-                    "
-                ).unwrap().into_cursor();
-                cursor.bind(&[sqlite::Value::String(String::from(format!("%{}%", search)))]).unwrap();
+                    ",
+                    )
+                    .unwrap()
+                    .into_cursor();
+                cursor
+                    .bind(&[sqlite::Value::String(String::from(format!("%{}%", search)))])
+                    .unwrap();
                 if let Some(row) = cursor.next().unwrap() {
                     resp.pagination.total = row[0].as_integer().unwrap() as i32;
                 }
-    
+
                 let statement_result = self.conn.prepare(
                     "
         SELECT * FROM imagesmeta WHERE PRINTF('%s:#%s', title, author) LIKE ? ORDER BY update_time desc LIMIT ? OFFSET ?;
         ",
                 );
-    
+
                 match statement_result {
                     Ok(statement) => {
                         let mut cursor = statement.into_cursor();
@@ -213,7 +231,7 @@ VALUES (:path, :title, :author, :intro, :cover, :create_time, :update_time);
                                 sqlite::Value::Integer(((page - 1) * page_size) as i64),
                             ])
                             .unwrap();
-    
+
                         while let Some(row) = cursor.next().unwrap() {
                             resp.list.push(ImagesMeta::from(row));
                         }
@@ -230,22 +248,18 @@ VALUES (:path, :title, :author, :intro, :cover, :create_time, :update_time);
                 SELECT * FROM imagesmeta WHERE id = ?;
                 ",
             );
-            
+
             match statement_result {
                 Ok(statement) => {
                     let mut cursor = statement.into_cursor();
-                    cursor
-                        .bind(&[
-                            sqlite::Value::Integer(id),
-                        ])
-                        .unwrap();
-                    
+                    cursor.bind(&[sqlite::Value::Integer(id)]).unwrap();
+
                     while let Some(row) = cursor.next().unwrap() {
                         return Ok(ImagesMeta::from(row));
                     }
                     return Err(String::from("找不到图片信息"));
-                },
-                Err(_error) => return Err(String::from("找不到图片信息"))
+                }
+                Err(_error) => return Err(String::from("找不到图片信息")),
             }
         }
 
@@ -259,15 +273,11 @@ VALUES (:path, :title, :author, :intro, :cover, :create_time, :update_time);
             match statement_result {
                 Ok(statement) => {
                     let mut cursor = statement.into_cursor();
-                    cursor
-                        .bind(&[
-                            sqlite::Value::Integer(id),
-                        ])
-                        .unwrap();
+                    cursor.bind(&[sqlite::Value::Integer(id)]).unwrap();
                     cursor.next().unwrap();
                     return Ok(());
-                },
-                Err(_error) => return Err(String::from("找不到图片信息"))
+                }
+                Err(_error) => return Err(String::from("找不到图片信息")),
             }
         }
 
@@ -303,15 +313,17 @@ WHERE id=:id;
         }
 
         pub fn update_browse_settings(
-            &self, 
-            meta_id: i64, 
-            browse_type: &str, 
+            &self,
+            meta_id: i64,
+            browse_type: &str,
             home_page: bool,
             current_path: &str,
             current_index: i64,
         ) {
-            let mut statement = self.conn.prepare(
-                "
+            let mut statement = self
+                .conn
+                .prepare(
+                    "
                 INSERT INTO browsesettings(meta_id,browse_type,home_page,current_path,current_index)
                     VALUES (:meta_id, :browse_type, :home_page, :current_path, :current_index)
                     ON CONFLICT(meta_id) DO UPDATE SET
@@ -319,38 +331,41 @@ WHERE id=:id;
                         home_page=excluded.home_page,
                         current_path=excluded.current_path,
                         current_index=excluded.current_index;
-                "
-            ).unwrap();
+                ",
+                )
+                .unwrap();
             statement.bind_by_name(":meta_id", meta_id).unwrap();
             statement.bind_by_name(":browse_type", browse_type).unwrap();
-            statement.bind_by_name(":home_page", home_page as i64).unwrap();
-            statement.bind_by_name(":current_path", current_path).unwrap();
-            statement.bind_by_name(":current_index", current_index).unwrap();
+            statement
+                .bind_by_name(":home_page", home_page as i64)
+                .unwrap();
+            statement
+                .bind_by_name(":current_path", current_path)
+                .unwrap();
+            statement
+                .bind_by_name(":current_index", current_index)
+                .unwrap();
             statement.next().unwrap();
         }
-    
+
         pub fn get_browse_settings(&self, meta_id: i64) -> Result<BrowseSettings, String> {
             let statement_result = self.conn.prepare(
                 "
                 SELECT * FROM browsesettings WHERE meta_id = ?;
                 ",
             );
-            
+
             match statement_result {
                 Ok(statement) => {
                     let mut cursor = statement.into_cursor();
-                    cursor
-                        .bind(&[
-                            sqlite::Value::Integer(meta_id),
-                        ])
-                        .unwrap();
-                    
+                    cursor.bind(&[sqlite::Value::Integer(meta_id)]).unwrap();
+
                     while let Some(row) = cursor.next().unwrap() {
                         return Ok(BrowseSettings::from(row));
                     }
                     return Err(String::from("找不到浏览设置"));
-                },
-                Err(_error) => return Err(String::from("找不到浏览设置"))
+                }
+                Err(_error) => return Err(String::from("找不到浏览设置")),
             }
         }
     }
