@@ -4,9 +4,13 @@
       size="small"
       hoverable
     >
+
+      <!-- 封面 -->
       <template #cover>
         <img class="image-card-cover" v-lazy="convertFileSrc(imagesMeta.cover)" @click="browseImages">
       </template>
+
+      <!-- 标题 -->
       <template #header>
         <span class="image-card-title" @click="browseImages">{{ imagesMeta.title }}</span>
       </template>
@@ -18,7 +22,32 @@
           <n-blockquote align-text>{{ imagesMeta.intro }}</n-blockquote>
         </div>
       </div>
+
+      <!-- 下方 -->
       <template #action>
+        <!-- 标签 -->
+        <!-- <n-space :size="5">
+          <template v-for="(value) in data.tags" :key="value.id">
+            <n-tag type="success" size="small" round closable @close="emit('update', Object.assign({}, imagesMeta))">
+              {{ value.name }}
+            </n-tag>
+          </template>
+        </n-space> -->
+
+        <n-space vertical>
+          <n-tree-select
+            multiple
+            checkable
+            filterable
+            :clear-filter-after-select="false"
+            :options="data.options"
+            :default-value="data.default_options"
+            clearable
+          />
+        </n-space>
+
+        <!-- 添加标签+ -->
+
         <n-space justify="space-around" :size="10">
           <n-button text @click="emit('update', Object.assign({}, imagesMeta))">
             <template #icon>
@@ -53,9 +82,10 @@
 
 <script>
 import { convertFileSrc } from '@tauri-apps/api/tauri'
-import { NCard, NBlockquote, NText, NIcon, NButton, NSpace, NPopconfirm } from 'naive-ui'
+import { NCard, NBlockquote, NText, NIcon, NButton, NSpace, NPopconfirm, NTreeSelect} from 'naive-ui'
 import { useRouter } from 'vue-router'
 import { Pencil, TrashBin } from '@vicons/ionicons5'
+import { reactive } from 'vue'
 
 export default {
   name: 'ImageCard',
@@ -68,14 +98,42 @@ export default {
     NSpace,
     Pencil,
     TrashBin,
-    NPopconfirm
+    NPopconfirm,
+    NTreeSelect
   },
+
   props: {
     imagesMeta: Object
   },
   emits: ['remove', 'update'],
   setup (props, context) {
     const router = useRouter()
+
+    let data = reactive({
+      tags: [
+        {
+          id : 1,
+          name: "不该"
+        },
+        {
+          id : 2,
+          name: "说好再见"
+        }
+      ],
+      options: [
+        {
+          label: "不该",
+          key: "不该",
+        },
+        {
+          label: "说好再见",
+          key: "说好再见",
+        },
+      ],
+
+      default_options: ["说好再见"],
+      
+    })
 
     async function browseImages () {
       // router.push({
@@ -95,6 +153,7 @@ export default {
 
     return {
       emit: context.emit,
+      data,
       convertFileSrc,
       browseImages
     }

@@ -55,6 +55,9 @@ pub fn system_menu_handler(app: &AppHandle, event: SystemTrayEvent) {
             ..
         } => {
             println!("system tray received a left click");
+            window.show().unwrap();
+            window.center().unwrap();
+            window.set_focus().unwrap();
         }
         // 右键点击
         SystemTrayEvent::RightClick {

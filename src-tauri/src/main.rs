@@ -8,9 +8,11 @@ mod menu;
 
 use crate::dao::imageview_dao::{BrowseSettings, ImageViewDao, ImagesMeta, ImagesMetaList};
 use serde_with::serde_as;
+use tauri::Manager;
 
 fn main() {
     let mut _app = tauri::Builder::default()
+        .setup(set_up)
         .invoke_handler(tauri::generate_handler![
             init_table,
             add_images_meta,
@@ -22,7 +24,6 @@ fn main() {
             delete_images_meta,
             update_images_meta,
         ])
-        .setup(|_app| Ok(()))
         // 菜单
         .menu(menu::menu())
         // 系统托盘
@@ -37,6 +38,32 @@ fn main() {
             }
             _ => {}
         });
+}
+
+fn set_up(app: &mut tauri::App) -> Result<(), Box<dyn std::error::Error>> {
+
+    if let Some(main_win) = app.get_window("main") {
+        // 隐藏 main
+        main_win.hide().unwrap();
+        main_win.on_window_event(|f: &tauri::WindowEvent| {
+            println!("main_win 事件 {:?}", f);
+            // 卫语句，加上 if 来判断
+            match f {
+                tauri::WindowEvent::CloseRequested {api, .. } => {
+                    println!("main win 将要close");
+                    api.prevent_close();
+                
+                },
+                tauri::WindowEvent::FileDrop(api) => {
+                    println!("获取到 文件拖拽事件");
+                },
+                _ => {},
+            }
+        });
+  
+    }
+
+    Ok(())
 }
 
 fn get_dao() -> ImageViewDao {
