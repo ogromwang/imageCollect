@@ -26,24 +26,12 @@
       <!-- 下方 -->
       <template #action>
         <!-- 标签 -->
-        <!-- <n-space :size="5">
+        <n-space :size="5">
           <template v-for="(value) in data.tags" :key="value.id">
             <n-tag type="success" size="small" round closable @close="emit('update', Object.assign({}, imagesMeta))">
               {{ value.name }}
             </n-tag>
           </template>
-        </n-space> -->
-
-        <n-space vertical>
-          <n-tree-select
-            multiple
-            checkable
-            filterable
-            :clear-filter-after-select="false"
-            :options="data.options"
-            :default-value="data.default_options"
-            clearable
-          />
         </n-space>
 
         <!-- 添加标签+ -->
@@ -82,7 +70,7 @@
 
 <script>
 import { convertFileSrc } from '@tauri-apps/api/tauri'
-import { NCard, NBlockquote, NText, NIcon, NButton, NSpace, NPopconfirm, NTreeSelect} from 'naive-ui'
+import { NCard, NBlockquote, NText, NIcon, NButton, NSpace, NPopconfirm, NTag} from 'naive-ui'
 import { useRouter } from 'vue-router'
 import { Pencil, TrashBin } from '@vicons/ionicons5'
 import { reactive } from 'vue'
@@ -99,7 +87,7 @@ export default {
     Pencil,
     TrashBin,
     NPopconfirm,
-    NTreeSelect
+    NTag
   },
 
   props: {
@@ -119,19 +107,7 @@ export default {
           id : 2,
           name: "说好再见"
         }
-      ],
-      options: [
-        {
-          label: "不该",
-          key: "不该",
-        },
-        {
-          label: "说好再见",
-          key: "说好再见",
-        },
-      ],
-
-      default_options: ["说好再见"],
+      ]
       
     })
 

@@ -41,27 +41,10 @@ fn main() {
 }
 
 fn set_up(app: &mut tauri::App) -> Result<(), Box<dyn std::error::Error>> {
-
-    if let Some(main_win) = app.get_window("main") {
-        // 隐藏 main
-        main_win.hide().unwrap();
-        main_win.on_window_event(|f: &tauri::WindowEvent| {
-            println!("main_win 事件 {:?}", f);
-            // 卫语句，加上 if 来判断
-            match f {
-                tauri::WindowEvent::CloseRequested {api, .. } => {
-                    println!("main win 将要close");
-                    api.prevent_close();
-                
-                },
-                tauri::WindowEvent::FileDrop(api) => {
-                    println!("获取到 文件拖拽事件");
-                },
-                _ => {},
-            }
-        });
-  
-    }
+    let all_windows = app.windows();
+    app.listen_global("keydown".to_string(), |event| {
+        println!("监听到事件");
+    });
 
     Ok(())
 }
