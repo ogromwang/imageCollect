@@ -41,7 +41,6 @@ fn main() {
 }
 
 fn set_up(app: &mut tauri::App) -> Result<(), Box<dyn std::error::Error>> {
-    let all_windows = app.windows();
     app.listen_global("keydown".to_string(), |event| {
         println!("监听到事件");
     });

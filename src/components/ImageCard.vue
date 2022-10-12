@@ -26,13 +26,8 @@
       <!-- 下方 -->
       <template #action>
         <!-- 标签 -->
-        <n-space :size="5">
-          <template v-for="(value) in data.tags" :key="value.id">
-            <n-tag type="success" size="small" round closable @close="emit('update', Object.assign({}, imagesMeta))">
-              {{ value.name }}
-            </n-tag>
-          </template>
-        </n-space>
+
+        <n-dynamic-tags :type="'success'" v-model:value="data.tags" @create="onCreate" @update:value="onUpdate" />
 
         <!-- 添加标签+ -->
 
@@ -70,7 +65,7 @@
 
 <script>
 import { convertFileSrc } from '@tauri-apps/api/tauri'
-import { NCard, NBlockquote, NText, NIcon, NButton, NSpace, NPopconfirm, NTag} from 'naive-ui'
+import { NCard, NBlockquote, NText, NIcon, NButton, NSpace, NPopconfirm, NDynamicTags} from 'naive-ui'
 import { useRouter } from 'vue-router'
 import { Pencil, TrashBin } from '@vicons/ionicons5'
 import { reactive } from 'vue'
@@ -87,8 +82,8 @@ export default {
     Pencil,
     TrashBin,
     NPopconfirm,
-    NTag
-  },
+    NDynamicTags
+},
 
   props: {
     imagesMeta: Object
@@ -99,17 +94,33 @@ export default {
 
     let data = reactive({
       tags: [
-        {
-          id : 1,
-          name: "不该"
-        },
-        {
-          id : 2,
-          name: "说好再见"
-        }
-      ]
-      
+      { label: "你没见过不等于没有", value: "hello world 1" },
+      {
+        label: "不要给自己设限",
+        value: "hello world 2"
+      },
+      {
+        label: "不要说连升两级",
+        value: "hello world 3"
+      },
+      {
+        label: "直接升到 CEO 都是有可能的",
+        value: "hello world 4"
+      }
+    ]
+
     })
+
+    function onCreate(label) {
+      return {
+        label,
+        value: "v" + label
+      };
+    }
+
+    function onUpdate(value) {
+      alert(value)
+    }
 
     async function browseImages () {
       // router.push({
@@ -131,7 +142,9 @@ export default {
       emit: context.emit,
       data,
       convertFileSrc,
-      browseImages
+      browseImages,
+      onCreate,
+      onUpdate
     }
   }
 }
