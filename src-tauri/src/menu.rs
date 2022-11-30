@@ -25,6 +25,7 @@ pub fn system_menu() -> SystemTray {
         "文件",
         // 子菜单项（新增）
         SystemTrayMenu::new()
+            .add_item(CustomMenuItem::new("drag_file".to_string(), "上传文件"))
             .add_item(CustomMenuItem::new("new_file".to_string(), "新建文件"))
             .add_item(CustomMenuItem::new("edit_file".to_string(), "编辑文件")),
     );
@@ -64,17 +65,17 @@ pub fn system_menu_handler(app: &AppHandle, event: SystemTrayEvent) {
     };
 
     let parent_window = Some(&window);
- 
+
     // 匹配点击事件
     match event {
         // 左键点击
         SystemTrayEvent::LeftClick {
-            position: _,
+            position,
             size: _,
             ..
         } => {
             println!("system tray received a left click");
-     
+            open_drag_window(app, (position.x, position.y));
         }
         // 右键点击
         SystemTrayEvent::RightClick {
@@ -94,9 +95,6 @@ pub fn system_menu_handler(app: &AppHandle, event: SystemTrayEvent) {
         }
         // 根据菜单 id 进行事件匹配
         SystemTrayEvent::MenuItemClick { id, .. } => match id.as_str() {
-            "edit_file" => {
-                tauri::api::dialog::message(parent_window, "Eidt File", "TODO");
-            }
             "new_file" => {
                 message(parent_window, "New File", "TODO");
             }
@@ -116,4 +114,39 @@ pub fn system_menu_handler(app: &AppHandle, event: SystemTrayEvent) {
             println!("other event")
         }
     }
+}
+
+pub fn open_drag_window(app: &AppHandle, position: (f64, f64)) -> () {
+    // 获取应用窗口
+    let window = match app.get_window("Drag") {
+        Some(w) => {
+            w.set_position(tauri::Position::Physical(tauri::PhysicalPosition {x: position.0 as i32, y: position.1 as i32}));
+
+            if let Ok(vis) = w.is_visible() {
+                if vis {
+                    w.hide();
+                } else {
+                    w.show();
+                }
+            }
+            w
+        },
+        _ => {
+            tauri::window::WindowBuilder::new(
+                app,
+                "Drag".to_string(),
+                tauri::WindowUrl::App("/drag".into()),
+            )
+                .title("Drag")
+                // .center()
+                .fullscreen(false)
+                .decorations(false)
+                .visible(true)
+                .focus()
+                .position(position.0, position.1)
+                .build()
+                .unwrap()
+        },
+    };
+
 }

@@ -60,12 +60,27 @@
     },
     "windows": [
       {
-        "fileDropEnabled": true,
+        "fileDropEnabled": false,
         "fullscreen": false,
         "height": 600,
-        "resizable": true,
+        "resizable": false,
         "title": "ImageView",
         "width": 800
+      },
+      {
+        "fileDropEnabled": false,
+        "fullscreen": false,
+        "height": 50,
+        "url": "/drag",
+        "decorations": false,
+        "alwaysOnTop": true,
+        "resizable": false,
+        "title": "Drag",
+        "label": "Drag",
+        "width": 100,
+        "visible": false,
+        "theme": "Light",
+        "transparent": true
       }
     ],
     "systemTray": {
