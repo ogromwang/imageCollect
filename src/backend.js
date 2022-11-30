@@ -55,4 +55,14 @@ export default {
   async updateImagesMeta (meta) {
     return invoke('update_images_meta', meta)
   },
+
+  // 上传文件
+  async uploadFile (bytes, fileName, fileType) {
+    return invoke('upload_file', {
+      bytes,
+      fileName,
+      fileType
+    })
+  }
+
 }

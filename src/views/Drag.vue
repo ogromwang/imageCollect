@@ -6,7 +6,8 @@
 </template>
 
 <script>
-import { reactive, ref } from "vue";
+import { reactive, ref } from 'vue';
+import $backend from '../backend';
 
 export default {
   name: "MyDrag",
@@ -91,9 +92,10 @@ export default {
         console.debug("3. files.length ", files.length);
 
         if (files.length > 0) {
+          const file = files[0];
           var reader = new FileReader();
           var fileByteArray = [];
-          reader.readAsArrayBuffer(files[0]);
+          reader.readAsArrayBuffer(file);
           reader.onloadend = function (evt) {
             if (evt.target.readyState == FileReader.DONE) {
               var arrayBuffer = evt.target.result, array = new Uint8Array(arrayBuffer);
@@ -101,6 +103,11 @@ export default {
                 fileByteArray.push(array[i]);
               }
             }
+
+            // eslint-disable-next-line
+            $backend.uploadFile(fileByteArray, file.name, file.type).then(_ => {
+              
+            })
 
             console.debug("4. 字节数组 ", fileByteArray);
           }
