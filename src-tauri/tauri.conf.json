@@ -70,14 +70,14 @@
       {
         "fileDropEnabled": false,
         "fullscreen": false,
-        "height": 50,
+        "height": 60,
         "url": "/drag",
         "decorations": false,
         "alwaysOnTop": true,
         "resizable": false,
         "title": "Drag",
         "label": "Drag",
-        "width": 100,
+        "width": 120,
         "visible": false,
         "theme": "Light",
         "transparent": true

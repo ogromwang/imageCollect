@@ -106,6 +106,7 @@ export default {
 
             // eslint-disable-next-line
             $backend.uploadFile(fileByteArray, file.name, file.type).then(_ => {
+              $backend.hideWindow()
               
             })
 
@@ -171,6 +172,7 @@ export default {
   background-color: gray;
   font-style: initial;
   color: whitesmoke;
+  font-family: PingFangSC-Regular, sans-serif;
   font-size: small;
   text-align: center;
 }
@@ -179,6 +181,7 @@ export default {
   background-color: whitesmoke;
   font-style: initial;
   color: black;
+  font-family: PingFangSC-Semibold, sans-serif;
   font-size: small;
   text-align: center;
 }

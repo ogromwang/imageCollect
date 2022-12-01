@@ -4,6 +4,8 @@ pub mod imageview_dao {
     // use serde::ser::{Serialize, SerializeStruct, Serializer};
     use serde_with::serde_as;
 
+    use crate::model::{FileMetaList, FileMeta};
+
     pub struct ImageViewDao {
         conn: sqlite::Connection,
     }
@@ -110,6 +112,19 @@ CREATE TABLE IF NOT EXISTS browsesettings (
     current_path TEXT,
     current_index INTEGER
 );
+
+CREATE TABLE IF NOT EXISTS file_meta (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    path TEXT,
+    orign_name TEXT,
+    name TEXT,
+    type TEXT,
+    length INTEGER,
+    create_time BIGINT NOT NULL,
+    update_time BIGINT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS 'file_meta_path' ON 'file_meta' (`path`);
+
 ",
                 )
                 .unwrap();
@@ -234,6 +249,103 @@ VALUES (:path, :title, :author, :intro, :cover, :create_time, :update_time);
 
                         while let Some(row) = cursor.next().unwrap() {
                             resp.list.push(ImagesMeta::from(row));
+                        }
+                        Ok(resp)
+                    }
+                    Err(_error) => Ok(resp),
+                }
+            }
+        }
+
+        pub fn get_file_meta_list(
+            &self,
+            search: &str,
+            page: i64,
+            page_size: i64,
+        ) -> Result<FileMetaList, String> {
+            let mut resp: FileMetaList = FileMetaList {
+                list: vec![],
+                pagination: Pagination {
+                    current: page as i32,
+                    page_size: page_size as i32,
+                    total: 0,
+                },
+            };
+            let search = search.trim();
+
+            if search.len() == 0 {
+                let mut cursor = self
+                    .conn
+                    .prepare(
+                        "
+                    SELECT COUNT(1) FROM file_meta;
+                    ",
+                    )
+                    .unwrap()
+                    .into_cursor();
+                if let Some(row) = cursor.next().unwrap() {
+                    resp.pagination.total = row[0].as_integer().unwrap() as i32;
+                }
+
+                let statement_result = self.conn.prepare(
+                    "
+        SELECT * FROM file_meta ORDER BY update_time desc LIMIT ? OFFSET ?;
+        ",
+                );
+
+                match statement_result {
+                    Ok(statement) => {
+                        let mut cursor = statement.into_cursor();
+                        cursor
+                            .bind(&[
+                                sqlite::Value::Integer(page_size as i64),
+                                sqlite::Value::Integer(((page - 1) * page_size) as i64),
+                            ])
+                            .unwrap();
+
+                        while let Some(row) = cursor.next().unwrap() {
+                            resp.list.push(FileMeta::from(row));
+                        }
+                        Ok(resp)
+                    }
+                    Err(_error) => Ok(resp),
+                }
+            } else {
+                let mut cursor = self
+                    .conn
+                    .prepare(
+                        "
+                    SELECT COUNT(1) FROM file_meta WHERE PRINTF('%s:#%s', name) LIKE ?;
+                    ",
+                    )
+                    .unwrap()
+                    .into_cursor();
+                cursor
+                    .bind(&[sqlite::Value::String(String::from(format!("%{}%", search)))])
+                    .unwrap();
+                if let Some(row) = cursor.next().unwrap() {
+                    resp.pagination.total = row[0].as_integer().unwrap() as i32;
+                }
+
+                let statement_result = self.conn.prepare(
+                    "
+        SELECT * FROM file_meta WHERE PRINTF('%s:#%s', name) LIKE ? ORDER BY update_time desc LIMIT ? OFFSET ?;
+        ",
+                );
+
+                match statement_result {
+                    Ok(statement) => {
+                        let mut cursor = statement.into_cursor();
+                        cursor
+                            .bind(&[
+                                sqlite::Value::String(String::from(format!("%{}%", search))),
+                                sqlite::Value::Integer(page_size as i64),
+                                sqlite::Value::Integer(((page - 1) * page_size) as i64),
+                            ])
+                            .unwrap();
+
+                        while let Some(row) = cursor.next().unwrap() {
+                            resp.list.push(FileMeta::from(row));
                         }
                         Ok(resp)
                     }
@@ -368,5 +480,35 @@ WHERE id=:id;
                 Err(_error) => return Err(String::from("找不到浏览设置")),
             }
         }
+
+        pub fn add_file_meta(
+            &self,
+            path: &str,
+            orign_name: &str,
+            file_type: &str,
+            length: i64,
+        ) {
+            let dt = Local::now();
+            let timestamp = dt.timestamp() as i64;
+
+            let mut statement = self
+                .conn
+                .prepare(
+                    "
+INSERT INTO file_meta (path, orign_name, name, type, length, create_time, update_time)
+VALUES (:path, :orign_name, :name :type, :length, :create_time, :update_time);
+",
+                )
+                .unwrap();
+            statement.bind_by_name(":path", path).unwrap();
+            statement.bind_by_name(":orign_name", orign_name).unwrap();
+            statement.bind_by_name(":name", orign_name).unwrap();
+            statement.bind_by_name(":type", file_type).unwrap();
+            statement.bind_by_name(":length", length).unwrap();
+            statement.bind_by_name(":create_time", timestamp).unwrap();
+            statement.bind_by_name(":update_time", timestamp).unwrap();
+            statement.next().unwrap();
+        }
+
     }
 }

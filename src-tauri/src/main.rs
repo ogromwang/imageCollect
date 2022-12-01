@@ -7,6 +7,7 @@ mod dao;
 mod menu;
 mod api;
 mod model;
+mod util;
 
 use api::*;
 use tauri::Manager;
@@ -25,6 +26,9 @@ fn main() {
             delete_images_meta,
             update_images_meta,
             upload_file,
+            hide_window,
+            get_file_meta_list,
+            
         ])
         // 菜单
         .menu(menu::menu())

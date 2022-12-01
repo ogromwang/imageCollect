@@ -1,6 +1,6 @@
 use tauri::{
     api::dialog::message, AppHandle, CustomMenuItem, Manager, Menu, MenuItem, Submenu, SystemTray,
-    SystemTrayEvent, SystemTrayMenu, SystemTrayMenuItem, SystemTraySubmenu, Window,
+    SystemTrayEvent, SystemTrayMenu, SystemTrayMenuItem, SystemTraySubmenu,
 };
 
 pub fn menu() -> Menu {
@@ -118,16 +118,12 @@ pub fn system_menu_handler(app: &AppHandle, event: SystemTrayEvent) {
 
 pub fn open_drag_window(app: &AppHandle, position: (f64, f64)) -> () {
     // 获取应用窗口
-    let window = match app.get_window("Drag") {
+    let _window = match app.get_window("Drag") {
         Some(w) => {
-            w.set_position(tauri::Position::Physical(tauri::PhysicalPosition {x: position.0 as i32, y: position.1 as i32}));
+            w.set_position(tauri::Position::Physical(tauri::PhysicalPosition {x: position.0 as i32, y: position.1 as i32})).unwrap();
 
             if let Ok(vis) = w.is_visible() {
-                if vis {
-                    w.hide();
-                } else {
-                    w.show();
-                }
+                if vis { w.hide().unwrap() } else { w.show().unwrap(); }
             }
             w
         },

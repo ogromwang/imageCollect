@@ -1,3 +1,5 @@
+use tauri::api::path::download_dir;
+
 use crate::dao::imageview_dao::{BrowseSettings, ImageViewDao, ImagesMeta, ImagesMetaList};
 use crate::model::*;
 
@@ -154,6 +156,12 @@ pub fn update_images_meta(
 }
 
 #[tauri::command]
+pub fn hide_window(_window: tauri::Window) -> Result<(), String> {
+    _window.hide().expect("关闭失败");
+    Ok(())
+}
+
+#[tauri::command]
 pub fn upload_file(
     _window: tauri::Window,
     bytes: Vec<u8>,
@@ -161,16 +169,11 @@ pub fn upload_file(
     file_type: &str,
 ) -> Result<(), String> {
     use std::io::Write;
+    use uuid::Uuid;
+    use crate::util::Path;
 
-    println!(
-        "请求参数为：[{}], [{}], [{:?}]",
-        file_name,
-        file_type,
-        bytes.len()
-    );
-
-    let base_path = "/Users/ogromwang/Downloads";
-    let file_path = std::path::Path::new(base_path).join(file_name);
+    let base_path = Path::base_path();
+    let file_path = base_path.join(format!("{}-{}", Uuid::new_v4().to_string(), file_name));
 
     let mut file = std::fs::File::create(file_path.as_os_str()).expect("文件上传失败");
     file.write_all(&bytes).expect("文件写入失败");
@@ -181,5 +184,23 @@ pub fn upload_file(
         bytes.len()
     );
 
+    get_dao().add_file_meta(
+        file_path.as_os_str().to_str().unwrap(),
+        file_name, 
+        file_type, 
+        bytes.len() as i64
+    );
+
     Ok(())
+}
+
+#[tauri::command]
+pub fn get_file_meta_list(
+    _window: tauri::Window,
+    search: &str,
+    page: i64,
+    page_size: i64,
+) -> Result<FileMetaList, String> {
+    let dao = get_dao();
+    dao.get_file_meta_list(search, page, page_size)
 }

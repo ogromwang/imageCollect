@@ -63,6 +63,11 @@ export default {
       fileName,
       fileType
     })
+  },
+
+  // 隐藏窗口
+  async hideWindow () {
+    return invoke('hide_window')
   }
 
 }

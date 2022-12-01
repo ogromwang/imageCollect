@@ -74,6 +74,7 @@ dependencies = [
  "sqlite",
  "tauri",
  "tauri-build",
+ "uuid 1.1.2",
 ]
 
 [[package]]
