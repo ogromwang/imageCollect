@@ -5,7 +5,12 @@ pub mod Path {
     static HOME_NAME: &'static str = "Pic Collector";
 
     pub fn base_path() -> PathBuf {
-        download_dir().unwrap().join(HOME_NAME)
+        let base_path = download_dir().unwrap().join(HOME_NAME);
+        if !base_path.exists() {
+            std::fs::create_dir(&base_path).unwrap();
+        }
+
+        base_path
     }
 
 }

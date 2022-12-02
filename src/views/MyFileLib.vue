@@ -42,8 +42,8 @@
     <div v-else style="margin: 12px;">
       <n-grid :x-gap="12" :y-gap="8" cols="1 2xs:1 xs:2 s:4 m:5 l:6 xl:7 2xl:8" responsive="screen">
         <n-grid-item v-for="meta in data.metaList" :key="meta.id">
-          <image-card
-            :images-meta="meta"
+          <file-card
+            :file-meta="meta"
             @remove="removeImagesMeta"
             @update="showUpdateImagesMeta"
           />
@@ -115,12 +115,12 @@ import { NButton, NEmpty, NModal, NCard, NForm, NFormItem, NInput, NGrid, NGridI
 import $backend from '../backend'
 import { FolderOpenOutline, ImagesOutline, Search } from '@vicons/ionicons5'
 import { convertFileSrc } from '@tauri-apps/api/tauri'
-import ImageCard from '../components/ImageCard.vue'
+import FileCard from '../components/FileCard.vue'
 
 export default {
   name: 'MyLibrary',
   components: {
-    ImageCard,
+    FileCard: FileCard,
     FolderOpenOutline,
     ImagesOutline,
     NButton,
@@ -185,11 +185,11 @@ export default {
       }
     }
 
-    async function getImagesMetaList () {
+    async function getFileMetaList () {
       const page = data.pagination.current
       const pageSize = data.pagination.pageSize
-      return $backend.getImagesMetaList(data.search.trim(), page, pageSize).then(res => {
-        console.log('getImagesMetaList', res)
+      return $backend.getFileMetaList(data.search.trim(), page, pageSize).then(res => {
+        console.log('getFileMetaList', res)
         data.metaList = res.list
         data.pagination.current = res.pagination.current
         data.pagination.pageSize = res.pagination.page_size
@@ -199,10 +199,10 @@ export default {
 
     watch(
       () => [data.pagination.current, data.pagination.pageSize],
-      getImagesMetaList
+      getFileMetaList
     )
 
-    getImagesMetaList()
+    getFileMetaList()
 
     async function selectFolder () {
       dialog.open({
@@ -254,7 +254,7 @@ export default {
         })
       }).then(() => {
         initModal()
-        return getImagesMetaList()
+        return getFileMetaList()
       })
     }
 
@@ -276,7 +276,7 @@ export default {
     async function removeImagesMeta (metaId) {
       console.log('removeImagesMeta', metaId)
       return $backend.deleteImageMeta(metaId).then(() => {
-        return getImagesMetaList()
+        return getFileMetaList()
       }, err => {
         message.error(`移除失败：${err}`)
       })
@@ -328,7 +328,7 @@ export default {
         })
       }).then(() => {
         initModal()
-        return getImagesMetaList()
+        return getFileMetaList()
       })
     }
 
@@ -336,14 +336,14 @@ export default {
       console.log('onSearchInputKeyUp', e)
       if (e.keyCode === 13) {
         // enter
-        getImagesMetaList()
+        getFileMetaList()
       }
     }
 
     return {
       imagesMetaForm,
       data,
-      getImagesMetaList,
+      getImagesMetaList: getFileMetaList,
       selectFolder,
       addImagesMeta,
       changeCover,

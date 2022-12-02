@@ -16,6 +16,15 @@ export default {
       pageSize: pageSize
     }
     return invoke('get_images_meta_list', data)
+  }, 
+
+  async getFileMetaList (search, page, pageSize) {
+    const data = {
+      search: search,
+      page: page,
+      pageSize: pageSize
+    }
+    return invoke('get_file_meta_list', data)
   },
 
   async getImagesFolderInfo (path) {

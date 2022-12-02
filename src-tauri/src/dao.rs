@@ -496,7 +496,7 @@ WHERE id=:id;
                 .prepare(
                     "
 INSERT INTO file_meta (path, orign_name, name, type, length, create_time, update_time)
-VALUES (:path, :orign_name, :name :type, :length, :create_time, :update_time);
+VALUES (:path, :orign_name, :name, :type, :length, :create_time, :update_time);
 ",
                 )
                 .unwrap();
