@@ -14,14 +14,6 @@
       <template #header>
         <span class="image-card-title" @click="browseImages">{{ fileMeta.orign_name }}</span>
       </template>
-      <div>
-        <n-text type="info" v-if="fileMeta.orign_name">
-          {{ fileMeta.orign_name }}
-        </n-text>
-        <div class="image-card-intro" v-if="fileMeta.orign_name">
-          <n-blockquote align-text>{{ fileMeta.orign_name }}</n-blockquote>
-        </div>
-      </div>
 
       <!-- 下方 -->
       <template #action>
@@ -65,17 +57,15 @@
 
 <script>
 import { convertFileSrc } from '@tauri-apps/api/tauri'
-import { NCard, NBlockquote, NText, NIcon, NButton, NSpace, NPopconfirm, NDynamicTags} from 'naive-ui'
+import { NCard, NIcon, NButton, NSpace, NPopconfirm, NDynamicTags} from 'naive-ui'
 import { useRouter } from 'vue-router'
 import { Pencil, TrashBin } from '@vicons/ionicons5'
 import { reactive } from 'vue'
 
 export default {
-  name: 'ImageCard',
+  name: 'FileCard',
   components: {
     NCard,
-    NBlockquote,
-    NText,
     NIcon,
     NButton,
     NSpace,
@@ -123,17 +113,10 @@ export default {
     }
 
     async function browseImages () {
-      // router.push({
-      //   path: '/browse',
-      //   query: {
-      //     id: props.fileMeta.id
-      //   }
-      // })
-
       router.push({
-        path: '/drag',
+        path: '/browse',
         query: {
-
+          id: props.fileMeta.id
         }
       })
     }
