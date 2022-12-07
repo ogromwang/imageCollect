@@ -1,6 +1,7 @@
 use tauri::api::path::download_dir;
 
 use crate::dao::imageview_dao::{BrowseSettings, ImageViewDao, ImagesMeta, ImagesMetaList};
+use crate::menu::open_drag_window;
 use crate::model::*;
 
 pub fn get_dao() -> ImageViewDao {
@@ -158,6 +159,12 @@ pub fn update_images_meta(
 #[tauri::command]
 pub fn hide_window(_window: tauri::Window) -> Result<(), String> {
     _window.hide().expect("关闭失败");
+    Ok(())
+}
+
+#[tauri::command]
+pub fn show_window(_window: tauri::Window) -> Result<(), String> {
+    _window.show().expect("show失败");
     Ok(())
 }
 

@@ -14,7 +14,7 @@
 
         <n-layout-content>
 
-          <div>
+          <div data-tauri-drag-region>
             <div style="margin: 20px 0;">
               <n-space justify="center" :size="30">
                 <n-input round placeholder="搜索标题" v-model:value="data.search" style="width: 400px;"
@@ -368,6 +368,12 @@ export default {
 </script>
 
 <style scoped>
+html,body,#app{
+    margin: 0;
+    padding: 0;
+    height: 100%;
+}
+
 .modal-cover {
   max-width: 100%;
 }

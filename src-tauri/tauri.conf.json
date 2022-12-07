@@ -7,7 +7,7 @@
     "distDir": "../public"
   },
   "package": {
-    "productName": "ImageView",
+    "productName": "ImageCollector",
     "version": "1.0.0"
   },
   "tauri": {
@@ -62,10 +62,10 @@
       {
         "fileDropEnabled": false,
         "fullscreen": false,
-        "height": 600,
+        "height": 800,
         "resizable": false,
         "title": "ImageView",
-        "width": 800
+        "width": 1024
       },
       {
         "fileDropEnabled": false,

@@ -77,6 +77,11 @@ export default {
   // 隐藏窗口
   async hideWindow () {
     return invoke('hide_window')
+  },
+  
+  // 显示窗口
+  async showWindow () {
+    return invoke('show_window')
   }
 
 }

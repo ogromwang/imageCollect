@@ -8,6 +8,7 @@
 <script>
 import { reactive, ref } from 'vue';
 import $backend from '../backend';
+import { listen } from '@tauri-apps/api/event';
 
 export default {
   name: "MyDrag",
@@ -104,11 +105,12 @@ export default {
               }
             }
 
-            // eslint-disable-next-line
-            $backend.uploadFile(fileByteArray, file.name, file.type).then(_ => {
+            setTimeout(() => {
+              // eslint-disable-next-line
+              $backend.uploadFile(fileByteArray, file.name, file.type).then(_ => {
               $backend.hideWindow()
-              
             })
+            }, 500);
 
             console.debug("4. 字节数组 ", fileByteArray);
           }
@@ -151,7 +153,25 @@ export default {
       }
     }
 
+    const listenEvent = async () => {
+      // eslint-disable-next-line
+      const unlistenDrag = await listen('drag', (event) => {
+        setTimeout(() => {
+          $backend.showWindow()
+        }, 2000);
+      })
+
+      // eslint-disable-next-line
+      const unlistenRelease = await listen('release', (event) => {
+        setTimeout(() => {
+          $backend.hideWindow()  
+        }, 500);
+        
+      })
+    }
+
     init()
+    listenEvent()
 
     return {
       data

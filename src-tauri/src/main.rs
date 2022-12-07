@@ -3,11 +3,13 @@
     windows_subsystem = "windows"
 )]
 
+mod api;
 mod dao;
 mod menu;
-mod api;
 mod model;
 mod util;
+
+use std::{sync::{mpsc, atomic::{AtomicU64, Ordering}}, thread};
 
 use api::*;
 use tauri::Manager;
@@ -27,8 +29,8 @@ fn main() {
             update_images_meta,
             upload_file,
             hide_window,
+            show_window,
             get_file_meta_list,
-            
         ])
         // 菜单
         .menu(menu::menu())
@@ -47,9 +49,71 @@ fn main() {
 }
 
 fn set_up(app: &mut tauri::App) -> Result<(), Box<dyn std::error::Error>> {
-    app.listen_global("keydown".to_string(), |event| {
+    let (tx, rx) = mpsc::channel::<String>();
+
+    mouse_event(tx);
+
+    let app_ref = app.handle().clone();
+
+    thread::spawn(move || {
+        loop {
+            match rx.recv() {
+                Ok(payload) => {
+                    app_ref.emit_all(payload.as_str(), "").unwrap()
+                },
+                Err(e) => {},
+            }
+        }
+    });
+
+    app.listen_global("keydown".to_string(), |_event| {
         println!("监听到事件");
     });
 
     Ok(())
+}
+
+fn mouse_event(tx: std::sync::mpsc::Sender<String>) {
+    use mouce::Mouse;
+
+    thread::spawn(|| {
+
+        let mut mouse_manager = Mouse::new();
+
+
+        let hook_result = mouse_manager.hook(Box::new(move |e| {
+            let flag: AtomicU64 = AtomicU64::new(1);
+
+            if let mouce::common::MouseEvent::Press(mouce::common::MouseButton::Left) = e {
+                match tx.send("drag".to_string()) {
+                    Ok(o) => {},
+                    Err(e) => {
+                        println!("发送失败, {:?}", e.to_string());
+                    },
+                }
+            }
+
+            if let mouce::common::MouseEvent::Release(mouce::common::MouseButton::Left) = e {
+                match tx.send("release".to_string()) {
+                    Ok(o) => {},
+                    Err(e) => {
+                        println!("发送失败, {:?}", e.to_string());
+                    },
+                }
+            }
+
+        }));
+
+        match hook_result {
+            Ok(id) => {
+                println!("监听返回成功, id:{}", id);
+                // assert_eq!(mouse_manager.unhook(id), Ok(()));
+            }
+            // Hooking may require user privileges on some systems
+            // e.g. requires super user for Linux
+            Err(err) => {
+                println!("监听 hook 失败 {}", err);
+            }
+        }
+    });
 }

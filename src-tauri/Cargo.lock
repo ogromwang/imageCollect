@@ -68,6 +68,7 @@ version = "0.1.0"
 dependencies = [
  "chrono",
  "dire",
+ "mouce",
  "serde",
  "serde_json",
  "serde_with",
@@ -1492,6 +1493,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "96590ba8f175222643a85693f33d26e9c8a015f599c216509b1a6894af675d34"
 dependencies = [
  "adler",
+]
+
+[[package]]
+name = "mouce"
+version = "0.2.41"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "790c5b339dfba93ed7bc46bec641c645babbd7b5d0db9f3d90b8b6c69934e209"
+dependencies = [
+ "glob",
 ]
 
 [[package]]
