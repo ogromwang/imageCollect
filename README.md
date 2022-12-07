@@ -69,7 +69,6 @@ Image Collect 基于或受这些项目的启发，依此类推：
 
 - [tauri-apps/tauri](https://github.com/tauri-apps/tauri): Build smaller, faster, and more secure desktop applications with a web frontend.
 - [BD777/imageview](https://github.com/BD777/imageview): Image viewer by tauri
-- [Dreamacro/clash](https://github.com/BD777/imageview): Image viewer by tauri
 
 ## License
 
