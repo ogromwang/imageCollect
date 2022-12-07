@@ -62,10 +62,10 @@
       {
         "fileDropEnabled": false,
         "fullscreen": false,
-        "height": 800,
+        "height": 600,
         "resizable": false,
         "title": "ImageView",
-        "width": 1024
+        "width": 800
       },
       {
         "fileDropEnabled": false,
